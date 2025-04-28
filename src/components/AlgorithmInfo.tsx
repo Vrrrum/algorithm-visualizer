@@ -130,6 +130,22 @@ def merge(left, right):
             heapify(arr, n, largest)
     `
         },
+        {
+            name: "Selection Sort",
+            description: "Algorytm sortowania przez wybieranie, który znajduje najmniejszy element w nieposortowanej części tablicy i zamienia go z pierwszym elementem nieposortowanej części.",
+            implementation: `
+def selection_sort(arr):
+    n = len(arr)
+    
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+                
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+`
+        }
 ];
 
 
@@ -154,17 +170,18 @@ const AlgorithmInfo: React.FC<AlgorithmInfoProps> = ({algorithmName}) => {
 
     return (
         <div>
-            <h2>Informacje o algorytmie {algorithmName}</h2>
+            <h2 className="text-4xl font-bold mt-8">Informacje o algorytmie {algorithmName}</h2>
             <div className="algorithm-info flex max-h-screen mt-8">
+
                 <div className="p-4 w-1/2">
-                    <h3 className="text-xl text-left">Implementacja:</h3>
+                    <h3 className="text-2xl text-left font-bold">Opis:</h3>
+                    <p>{info}</p>
+                </div>
+                <div className="p-4 w-1/2">
+                    <h3 className="text-2xl text-left font-bold">Implementacja:</h3>
                     <SyntaxHighlighter language="python" style={dark}>
                         {implementation}
                     </SyntaxHighlighter>
-                </div>
-                <div className="p-4 w-1/2">
-                    <h3 className="text-xl text-left">Opis:</h3>
-                    <p>{info}</p>
                 </div>
             </div>
         </div>

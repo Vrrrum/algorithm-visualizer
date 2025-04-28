@@ -3,14 +3,20 @@ export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, 
 export async function quickSort(
     arr: number[],
     setArray: (arr: number[]) => void,
+    setComparingIndices: (indices: number[]) => void,
+    setSortedIndices: (indices: number[]) => void,
     sleepTime = 300,
     left = 0,
     right = arr.length - 1
 ): Promise<number[]> {
-    if (left >= right) return arr;
-    const pivotIndex = await partition(arr, setArray, sleepTime, left, right);
-    await quickSort(arr, setArray, sleepTime, left, pivotIndex - 1);
-    await quickSort(arr, setArray, sleepTime, pivotIndex + 1, right);
+    if (left >= right) {
+        setSortedIndices(prev => [...prev, left]);
+        return arr;
+    }
+    const pivotIndex = await partition(arr, setArray, setComparingIndices, sleepTime, left, right);
+    setSortedIndices(prev => [...prev, pivotIndex]);
+    await quickSort(arr, setArray, setComparingIndices, setSortedIndices, sleepTime, left, pivotIndex - 1);
+    await quickSort(arr, setArray, setComparingIndices, setSortedIndices, sleepTime, pivotIndex + 1, right);
     setArray([...arr]);
     return arr;
 }
@@ -18,6 +24,7 @@ export async function quickSort(
 async function partition(
     arr: number[],
     setArray: (arr: number[]) => void,
+    setComparingIndices: (indices: number[]) => void,
     sleepTime: number,
     left: number,
     right: number
@@ -25,6 +32,7 @@ async function partition(
     const pivot = arr[right];
     let i = left;
     for (let j = left; j < right; j++) {
+        setComparingIndices([j, right]);
         if (arr[j] < pivot) {
             [arr[i], arr[j]] = [arr[j], arr[i]];
             setArray([...arr]);
@@ -41,17 +49,26 @@ async function partition(
 export async function bubbleSort(
     arr: number[],
     setArray: (arr: number[]) => void,
+    setComparingIndices: (indices: number[]) => void,
+    setSortedIndices: (indices: number[]) => void,
     sleepTime = 300
 ): Promise<number[]> {
+    const sortedIndices: number[] = [];
     for (let i = 0; i < arr.length - 1; i++) {
         for (let j = 0; j < arr.length - i - 1; j++) {
+            setComparingIndices([j, j + 1]);
             if (arr[j] > arr[j + 1]) {
                 [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                 setArray([...arr]);
                 await sleep(sleepTime);
             }
         }
+        sortedIndices.push(arr.length - i - 1);
+        setSortedIndices([...sortedIndices]);
     }
+    sortedIndices.push(0);
+    setSortedIndices([...sortedIndices]);
+    setComparingIndices([]);
     return arr;
 }
 

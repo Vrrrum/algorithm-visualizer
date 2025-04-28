@@ -12,55 +12,33 @@ import {
     heapSort,
     radixSort
 } from './sortingAlgorithms';
-
+import Header from './components/Header';
 type Result = {
     algorithm: string;
     time: number;
-    timestamp: string;
+    length: number;
 };
 
 const App: React.FC = () => {
     const [array, setArray] = useState<number[]>([]);
     const [sorting, setSorting] = useState(false);
     const [algorithm, setAlgorithm] = useState<'Quicksort' | 'Bubble Sort' | 'Selection Sort' | 'Merge Sort' | 'Heap Sort' | 'Radix Sort'>('Quicksort');
-    // @ts-ignore
     const [time, setTime] = useState<number>(0);
     const [results, setResults] = useState<Result[]>([]);
+    const [comparingIndices, setComparingIndices] = useState<number[]>([]);
+    const [sortedIndices, setSortedIndices] = useState<number[]>([]);
 
-    const generateArray = () => {
-            const newArray = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100));
+    const generateArray = (size: number) => {
+        const newArray = Array.from({ length: size }, () => Math.floor(Math.random() * 100));
         setArray(newArray);
+        setComparingIndices([]);
+        setSortedIndices([]);
     };
 
-    // const handleSort = async () => {
-    //     setSorting(true);
-    //
-    //     const interval = setInterval(() => {
-    //         setTime(performance.now() - startTime);
-    //     }, 100);
-    //
-    //     const startTime = performance.now();
-    //     if (algorithm === 'Quicksort') {
-    //         await quickSort([...array], setArray);
-    //     } else if (algorithm === 'Bubble Sort') {
-    //         await bubbleSort([...array], setArray);
-    //     } else if (algorithm === 'Selection Sort') {
-    //         await selectionSort([...array], setArray);
-    //     } else if (algorithm === 'Merge Sort') {
-    //         await mergeSort([...array], setArray);
-    //     } else if (algorithm === 'Heap Sort') {
-    //         await heapSort([...array], setArray);
-    //     } else if (algorithm === 'Radix Sort') {
-    //     await radixSort([...array], setArray);
-    // }
-
-    //     const endTime = performance.now();
-    //
-    //     setResults(prev => [...prev, { algorithm, time: endTime - startTime, timestamp: new Date().toLocaleString() }]);
-    //     setSorting(false);
-    // };
     const handleSort = async () => {
         setSorting(true);
+        setComparingIndices([]);
+        setSortedIndices([]);
 
         const startTime = performance.now();
         const interval = setInterval(() => {
@@ -69,28 +47,35 @@ const App: React.FC = () => {
 
         try {
             if (algorithm === 'Quicksort') {
-                await quickSort([...array], setArray);
+                await quickSort([...array], setArray, setComparingIndices, setSortedIndices);
             } else if (algorithm === 'Bubble Sort') {
-                await bubbleSort([...array], setArray);
+                await bubbleSort([...array], setArray, setComparingIndices, setSortedIndices);
             } else if (algorithm === 'Selection Sort') {
-                await selectionSort([...array], setArray);
+                await selectionSort([...array], setArray, setComparingIndices, setSortedIndices);
             } else if (algorithm === 'Merge Sort') {
-                await mergeSort([...array], setArray);
+                await mergeSort([...array], setArray, setComparingIndices, setSortedIndices);
             } else if (algorithm === 'Heap Sort') {
-                await heapSort([...array], setArray);
+                await heapSort([...array], setArray, setComparingIndices, setSortedIndices);
             } else if (algorithm === 'Radix Sort') {
-                await radixSort([...array], setArray);
+                await radixSort([...array], setArray, setComparingIndices, setSortedIndices);
             }
         } finally {
             clearInterval(interval);
-            setResults(prev => [...prev, { algorithm, time: time, timestamp: new Date().toLocaleString() }]);
+            setResults(prev => [...prev, { algorithm, time: time, length: array.length }]);
             setSorting(false);
+            setComparingIndices([]);
         }
     };
 
     return (
         <div className="App flex flex-col min-h-full justify-center min-w-full">
-                <h1 className="text-2xl mt-8">Wizualizator sortowania</h1>
+            <Header />
+            <div className="h-full">
+                <ArrayVisualizer 
+                    array={array} 
+                    comparingIndices={comparingIndices}
+                    sortedIndices={sortedIndices}
+                />
                 <Controls
                     sorting={sorting}
                     algorithm={algorithm}
@@ -100,12 +85,12 @@ const App: React.FC = () => {
                     arrayLength={array.length}
                     time={time}
                     setTime={setTime}
-                />
-                <ArrayVisualizer array={array} />
-                <ResultsTable results={results} />
-                {algorithm && (
-                    <AlgorithmInfo algorithmName={algorithm} />
-                )}
+                    />
+            </div>
+            <ResultsTable results={results} />
+            {algorithm && (
+                <AlgorithmInfo algorithmName={algorithm} />
+            )}
         </div>
     );
 };
