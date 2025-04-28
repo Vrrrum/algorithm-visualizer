@@ -1,111 +1,111 @@
 import React, { useState } from 'react';
 import './App.css';
+import ArrayVisualizer from './components/ArrayVisualizer';
+import Controls from './components/Controls';
+import ResultsTable from './components/ResultsTable';
+import AlgorithmInfo from './components/AlgorithmInfo';
+import {
+    quickSort,
+    bubbleSort,
+    selectionSort,
+    mergeSort,
+    heapSort,
+    radixSort
+} from './sortingAlgorithms';
+
+type Result = {
+    algorithm: string;
+    time: number;
+    timestamp: string;
+};
 
 const App: React.FC = () => {
     const [array, setArray] = useState<number[]>([]);
     const [sorting, setSorting] = useState(false);
-    const [algorithm, setAlgorithm] = useState<'quicksort' | 'bubblesort' | 'selectionsort'>('quicksort');
+    const [algorithm, setAlgorithm] = useState<'Quicksort' | 'Bubble Sort' | 'Selection Sort' | 'Merge Sort' | 'Heap Sort' | 'Radix Sort'>('Quicksort');
+    // @ts-ignore
+    const [time, setTime] = useState<number>(0);
+    const [results, setResults] = useState<Result[]>([]);
 
     const generateArray = () => {
-        const newArray = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100));
+            const newArray = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100));
         setArray(newArray);
     };
 
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    // const handleSort = async () => {
+    //     setSorting(true);
+    //
+    //     const interval = setInterval(() => {
+    //         setTime(performance.now() - startTime);
+    //     }, 100);
+    //
+    //     const startTime = performance.now();
+    //     if (algorithm === 'Quicksort') {
+    //         await quickSort([...array], setArray);
+    //     } else if (algorithm === 'Bubble Sort') {
+    //         await bubbleSort([...array], setArray);
+    //     } else if (algorithm === 'Selection Sort') {
+    //         await selectionSort([...array], setArray);
+    //     } else if (algorithm === 'Merge Sort') {
+    //         await mergeSort([...array], setArray);
+    //     } else if (algorithm === 'Heap Sort') {
+    //         await heapSort([...array], setArray);
+    //     } else if (algorithm === 'Radix Sort') {
+    //     await radixSort([...array], setArray);
+    // }
 
-    const quickSort = async (arr: number[], left = 0, right = arr.length - 1): Promise<number[]> => {
-        if (left >= right) return arr;
-
-        const pivotIndex = await partition(arr, left, right);
-        await quickSort(arr, left, pivotIndex - 1);
-        await quickSort(arr, pivotIndex + 1, right);
-
-        setArray([...arr]);
-        return arr;
-    };
-
-    const partition = async (arr: number[], left: number, right: number): Promise<number> => {
-        const pivot = arr[right];
-        let i = left;
-        for (let j = left; j < right; j++) {
-            if (arr[j] < pivot) {
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-                setArray([...arr]);
-                await sleep(300);
-                i++;
-            }
-        }
-        [arr[i], arr[right]] = [arr[right], arr[i]];
-        setArray([...arr]);
-        await sleep(300);
-        return i;
-    };
-
-    const bubbleSort = async (arr: number[]): Promise<number[]> => {
-        for (let i = 0; i < arr.length - 1; i++) {
-            for (let j = 0; j < arr.length - i - 1; j++) {
-                if (arr[j] > arr[j + 1]) {
-                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-                    setArray([...arr]);
-                    await sleep(300);
-                }
-            }
-        }
-        return arr;
-    };
-
-    const selectionSort = async (arr: number[]): Promise<number[]> => {
-        for (let i = 0; i < arr.length; i++) {
-            let minIndex = i;
-            for (let j = i + 1; j < arr.length; j++) {
-                if (arr[j] < arr[minIndex]) {
-                    minIndex = j;
-                }
-            }
-            if (minIndex !== i) {
-                [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
-                setArray([...arr]);
-                await sleep(300);
-            }
-        }
-        return arr;
-    };
-
+    //     const endTime = performance.now();
+    //
+    //     setResults(prev => [...prev, { algorithm, time: endTime - startTime, timestamp: new Date().toLocaleString() }]);
+    //     setSorting(false);
+    // };
     const handleSort = async () => {
         setSorting(true);
-        if (algorithm === 'quicksort') {
-            await quickSort([...array]);
-        } else if (algorithm === 'bubblesort') {
-            await bubbleSort([...array]);
-        } else if (algorithm === 'selectionsort') {
-            await selectionSort([...array]);
+
+        const startTime = performance.now();
+        const interval = setInterval(() => {
+            setTime(performance.now() - startTime);
+        }, 100);
+
+        try {
+            if (algorithm === 'Quicksort') {
+                await quickSort([...array], setArray);
+            } else if (algorithm === 'Bubble Sort') {
+                await bubbleSort([...array], setArray);
+            } else if (algorithm === 'Selection Sort') {
+                await selectionSort([...array], setArray);
+            } else if (algorithm === 'Merge Sort') {
+                await mergeSort([...array], setArray);
+            } else if (algorithm === 'Heap Sort') {
+                await heapSort([...array], setArray);
+            } else if (algorithm === 'Radix Sort') {
+                await radixSort([...array], setArray);
+            }
+        } finally {
+            clearInterval(interval);
+            setResults(prev => [...prev, { algorithm, time: time, timestamp: new Date().toLocaleString() }]);
+            setSorting(false);
         }
-        setSorting(false);
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Sorting Visualizer</h1>
-                <button onClick={generateArray} disabled={sorting}>Generate Array</button>
-                <select onChange={(e) => setAlgorithm(e.target.value as 'quicksort' | 'bubblesort' | 'selectionsort')} disabled={sorting}>
-                    <option value="quicksort">Quicksort</option>
-                    <option value="bubblesort">Bubble Sort</option>
-                    <option value="selectionsort">Selection Sort</option>
-                </select>
-                <button onClick={handleSort} disabled={sorting || array.length === 0}>Sort</button>
-                <div className="array-container">
-                    {array.map((value, idx) => (
-                        <div
-                            key={idx}
-                            className="array-bar"
-                            style={{ height: `${value}px` }}
-                        >
-                            {value}
-                        </div>
-                    ))}
-                </div>
-            </header>
+        <div className="App flex flex-col min-h-full justify-center min-w-full">
+                <h1 className="text-2xl mt-8">Wizualizator sortowania</h1>
+                <Controls
+                    sorting={sorting}
+                    algorithm={algorithm}
+                    setAlgorithm={setAlgorithm}
+                    onGenerate={generateArray}
+                    onSort={handleSort}
+                    arrayLength={array.length}
+                    time={time}
+                    setTime={setTime}
+                />
+                <ArrayVisualizer array={array} />
+                <ResultsTable results={results} />
+                {algorithm && (
+                    <AlgorithmInfo algorithmName={algorithm} />
+                )}
         </div>
     );
 };

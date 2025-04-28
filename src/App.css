@@ -4,7 +4,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  /*height: 100vh;*/
   width: 100vw;
 }
 
@@ -17,7 +17,7 @@
 }
 
 .array-bar {
-  width: 20px;
+  /*width: 50px;*/
   background-color: teal;
   color: white;
   text-align: center;
