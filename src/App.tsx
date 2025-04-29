@@ -13,7 +13,8 @@ import {
     radixSort
 } from './sortingAlgorithms';
 import Header from './components/Header';
-type Result = {
+
+export type Result = {
     algorithm: string;
     time: number;
     length: number;
