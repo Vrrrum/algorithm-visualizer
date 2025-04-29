@@ -16,5 +16,5 @@ npm install
 ```Bash 
 npm run dev
 ```
-## Dostęp przez stack blitz
+## Dostęp przez stack blitz WebContainer
 [Kliknij tutaj!](https://stackblitz.com/~/github.com/Vrrrum/algorithm-visualizer)
